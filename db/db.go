@@ -26,7 +26,7 @@ type User struct {
 
 
 func InitDB() {
-	dsn := "host=localhost user=admin password=password dbname=db port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "postgresql://go_book_database_user:fqStAgT9wUCdEEa4nrf5uzMoLkIqopJr@dpg-crcrbobqf0us73ars0s0-a.oregon-postgres.render.com/go_book_database"
 	var err error
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
