@@ -87,7 +87,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a JWT token
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(20 * time.Minute)
 	claims := &Claims{
 		Username: credentials.Username,
 		StandardClaims: jwt.StandardClaims{
