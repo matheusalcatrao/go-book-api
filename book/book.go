@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"fmt"
+	"github.com/joho/godotenv"
+	"log"
 )
 
 // Book struct represents a book with an ID, Title, Author, and Year.
@@ -32,12 +34,6 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	for i := range books {
-		if books[i].Photo != "" {
-			books[i].Photo = fmt.Sprintf("http://localhost:8000/%s", books[i].Photo)
-		}
-	}
-
 	json.NewEncoder(w).Encode(books)
 }
 
@@ -59,6 +55,11 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 // CreateBook adds a new book to the list.
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+	  log.Fatal("Error loading .env file")
+	}
 
 	// Parse the multipart form data to handle file uploads
 	err := r.ParseMultipartForm(10 << 20) // Max upload size set to 10MB
@@ -87,11 +88,14 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		baseURL := os.Getenv("BASE_URL") 
 		// Generate a unique filename using UUID to avoid collisions
 		fileExtension := filepath.Ext(handler.Filename)
 		newFileName := fmt.Sprintf("%s%s", uuid.New().String(), fileExtension)
 		filePath := filepath.Join("uploads", newFileName)
-
+		fullFileURL := fmt.Sprintf("%s/%s", baseURL, filePath)
+		print(fullFileURL)
+		
 		// Create a new file in the uploads directory
 		destFile, err := os.Create(filePath)
 		if err != nil {
@@ -107,7 +111,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Set the Photo field to the file path
-		book.Photo = filePath
+		book.Photo = fullFileURL
 	}
 
 	// Generate a new UUID for the book ID
