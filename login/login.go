@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
+	"go-book-api/db"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"go-book-api/db"
-
 )
 
 // Define your JWT secret key
@@ -78,7 +78,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
-
+	
 	// Compare stored hashed password with the provided one
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 	if err != nil {
@@ -108,5 +108,5 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
-	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
+	json.NewEncoder(w).Encode(map[string]string{"token": tokenString, "user_id": user.ID.String()})
 }

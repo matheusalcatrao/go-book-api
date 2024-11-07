@@ -2,15 +2,16 @@ package book
 
 import (
 	"encoding/json"
-	"net/http"
+	"fmt"
 	"go-book-api/db"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
-	"fmt"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"log"
 )
 
 // Book struct represents a book with an ID, Title, Author, and Year.
@@ -53,7 +54,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateBook adds a new book to the list.
-func CreateBook(w http.ResponseWriter, r *http.Request) {
+func CreateBook(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	errEnv := godotenv.Load()
@@ -62,7 +63,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse the multipart form data to handle file uploads
-	err := r.ParseMultipartForm(10 << 20) // Max upload size set to 10MB
+	err := request.ParseMultipartForm(10 << 20) // Max upload size set to 10MB
 	if err != nil {
 		http.Error(w, "Could not parse multipart form", http.StatusBadRequest)
 		return
@@ -70,12 +71,12 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	// Extract book data from the form
 	var book Book
-	book.Title = r.FormValue("title")
-	book.Author = r.FormValue("author")
-	book.Year = r.FormValue("year")
+	book.Title = request.FormValue("title")
+	book.Author = request.FormValue("author")
+	book.Year = request.FormValue("year")
 
 	// Handle file upload
-	file, handler, err := r.FormFile("photo")
+	file, handler, err := request.FormFile("photo")
 	if err == nil {
 		defer file.Close()
 

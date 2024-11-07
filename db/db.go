@@ -2,8 +2,9 @@ package db
 
 import (
 	"log"
-	"gorm.io/driver/postgres"
+
 	"github.com/google/uuid"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -24,6 +25,26 @@ type User struct {
 	Password string    `gorm:"not null" json:"password"`
 }
 
+type Post struct {
+	ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
+    UserID string `json:"user_id"`
+    BookID string `json:"book_id"`
+    Title  string `json:"title"`
+    Body   string `json:"body"`
+	Likes   int `json:"like"`
+}
+
+type Comment struct {
+	PostID  string `json:"post_id"`
+	UserID  string `json:"user_id"`
+	Content string `json:"content"`
+}
+
+type Favorite struct {
+	PostID string `json:"post_id"`
+	UserID string `json:"user_id"`
+}
+
 
 func InitDB() {
 	dsn := "postgresql://go_book_database_user:fqStAgT9wUCdEEa4nrf5uzMoLkIqopJr@dpg-crcrbobqf0us73ars0s0-a.oregon-postgres.render.com/go_book_database"
@@ -36,6 +57,9 @@ func InitDB() {
 	// Migrate the schema
 	err = Database.AutoMigrate(&Book{})
 	err = Database.AutoMigrate(&User{})
+	err = Database.AutoMigrate(&Post{})
+	err = Database.AutoMigrate(&Comment{})
+	err = Database.AutoMigrate(&Favorite{})
 	if err != nil {
 		log.Fatal("Failed to migrate database schema:", err)
 
