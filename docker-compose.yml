@@ -1,24 +1,19 @@
-version: '3.8'
-
 services:
-  postgres:
+  db:
     image: postgres:15
-    container_name: postgres_container
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
-    networks:
-      - app-network
 
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
-    driver: local
+  app:
+    build: .
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - BASE_URL=${BASE_URL}
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db

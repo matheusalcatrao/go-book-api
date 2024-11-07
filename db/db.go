@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"os"
 
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
@@ -47,7 +48,8 @@ type Favorite struct {
 
 
 func InitDB() {
-	dsn := "postgresql://go_book_database_user:fqStAgT9wUCdEEa4nrf5uzMoLkIqopJr@dpg-crcrbobqf0us73ars0s0-a.oregon-postgres.render.com/go_book_database"
+	// dsn := "host=localhost user=admin password=password dbname=db port=5432 sslmode=disable TimeZone=Brazil/East"
+	dsn := os.Getenv("DATABASE_URL")
 	var err error
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
