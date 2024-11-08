@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -48,9 +49,13 @@ type Favorite struct {
 
 
 func InitDB() {
-	// dsn := "host=localhost user=admin password=password dbname=db port=5432 sslmode=disable TimeZone=Brazil/East"
+	err := godotenv.Load()
+	if err != nil {
+	  log.Fatal("Error loading .env file")
+	}
+
 	dsn := os.Getenv("DATABASE_URL")
-	var err error
+
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to the database:", err)
